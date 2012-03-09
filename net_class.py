@@ -2,7 +2,14 @@
 # -*- coding: UTF-8 -*-
 from items import *
 import sys, os
-from passwd import user, password
+try:
+	from passwd import user, password
+except ImportError:
+	f = open('passwd.py', 'w')
+	f.write('user = "abc01"\npassword = "YOUR_PASSWORD"\n')
+	f.close()
+	sys.stderr.write(u'请在passwd.py中填入用户名和密码。')
+	sys.exit(-1)
 if hasattr(sys, 'setdefaultencoding'):
 	sys.setdefaultencoding('UTF-8')
 
