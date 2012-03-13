@@ -23,11 +23,14 @@ import urllib2
 from MyParser import *
 
 def login(user, password):
-	opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
-	urllib2.install_opener(opener)
-	para = urllib.urlencode({'userid':user, 'userpass':password})
-	urllib2.urlopen(loginurl, para)
-	return courselist_parser(urllib2.urlopen(courselist_url).read()).courses
+	try:
+		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
+		urllib2.install_opener(opener)
+		para = urllib.urlencode({'userid':user, 'userpass':password})
+		urllib2.urlopen(loginurl, para)
+		return courselist_parser(urllib2.urlopen(courselist_url).read()).courses
+	except urllib2.HTTPError:
+		raise RuntimeError(u'用户名密码错误\n')
 
 class course:
 	def __init__(self, course_dict):
@@ -53,14 +56,15 @@ class item:
 			fout = tempfile.TemporaryFile()
 			fout.write(data)
 			fout.seek(0)
-			data = subprocess.check_output(html_dumper, stdin=fout)
+			try:
+				data = subprocess.check_output(html_dumper, stdin=fout)
+			except OSError:
+				raise RuntimeError(u'依赖w3m程序，请安装\n')
 		out.write(u'\t\t成功\n\n')
 		return data
 	def download_data(self, filepath, size_limit=0, type_except=tuple(), type_only=tuple(), out = sys.stdout):
 		if self.itemtype == 'homework':
 			return self.download_attachment(filepath, out = out)
-		if self.itemtype != 'download':
-			raise RuntimeError
 		url = url_dict[self.itemtype + '_url'] + '?' + urllib.urlencode(self.item_dict)
 		obj = urllib2.urlopen(url)
 		filename = os.path.join(filepath, obj.info().get('Content-Disposition').partition('filename="')[2][:-1].decode('gb2312'))

@@ -6,6 +6,7 @@ if hasattr(sys, 'setdefaultencoding'):
 	sys.setdefaultencoding('UTF-8')
 
 import threading
+from urllib2 import URLError
 from handle_str import filename_trans
 from items import *
 class mythread(threading.Thread):
@@ -20,37 +21,45 @@ class mythread(threading.Thread):
 		else:
 			self.fileroot = '.html'
 	def run(self):
-		self.existing = False
-		self.unread_files = tuple()
 		try:
+			self.existing = False
+			self.unread_files = tuple()
 			courses = login(self.option['user'], self.option['password'])
-		except:
-			self.output.write(u'\n\n用户名密码错误或网络连接失败。')
+			for i in courses:
+				self.output.write(u'正在处理课程 '+i['name'].decode('UTF-8')+' ...\n')
+				thiscourse = course(i)
+				for itemtype in item_name_dict:
+					for j in thiscourse.get_item_list(itemtype):
+						if self.existing:
+							self.output.write(u'\n\n\n\t\t下载取消，退出')
+							self.output.finish(False)
+							return
+						thisitem = item(j, itemtype)
+						thispath = os.path.join(self.option['path'], i['name'].decode('UTF-8'), item_name_dict[itemtype])
+						if not os.path.exists(thispath):
+							os.makedirs(thispath)
+						if itemtype == 'download' or itemtype == 'homework':
+							thisitem.download_data(thispath, size_limit = self.option['size_limit'], \
+									type_only = self.option['type_only'], type_except = self.option['type_except'], out = self.output)
+						if itemtype == 'homework' or itemtype == 'notice':
+							thisitempath = os.path.join(thispath, '_'.join([filename_trans(j['name'].decode('UTF-8')), j['course_id'], j['id']])+self.fileroot)
+							if not os.path.exists(thisitempath):
+								self.unread_files += (thisitempath, )
+								fout = open(thisitempath, 'wb')
+								fout.write(thisitem.get_data(if_format = self.if_format, out = self.output))
+								fout.close()
+			self.output.write(u'\n\n\n下载完成！\n')
+			self.output.finish(True)
+		except RuntimeError as error:
+			self.output.write(error.message)
 			self.output.finish(False)
-			return
-		for i in courses:
-			self.output.write(u'正在处理课程 '+i['name'].decode('UTF-8')+' ...\n')
-			thiscourse = course(i)
-			for itemtype in item_name_dict:
-				for j in thiscourse.get_item_list(itemtype):
-					if self.existing:
-						self.output.write(u'\n\n\n\t\t下载取消，退出')
-						self.output.finish(False)
-						return
-					thisitem = item(j, itemtype)
-					thispath = os.path.join(self.option['path'], i['name'].decode('UTF-8'), item_name_dict[itemtype])
-					if not os.path.exists(thispath):
-						os.makedirs(thispath)
-					if itemtype == 'download' or itemtype == 'homework':
-						thisitem.download_data(thispath, size_limit = self.option['size_limit'], \
-								type_only = self.option['type_only'], type_except = self.option['type_except'], out = self.output)
-					if itemtype == 'homework' or itemtype == 'notice':
-						thisitempath = os.path.join(thispath, '_'.join([filename_trans(j['name'].decode('UTF-8')), j['course_id'], j['id']])+self.fileroot)
-						if not os.path.exists(thisitempath):
-							self.unread_files += (thisitempath, )
-							fout = open(thisitempath, 'wb')
-							fout.write(thisitem.get_data(if_format = self.if_format, out = self.output))
-							fout.close()
-		self.output.write(u'\n\n\n下载完成！\n')
-		self.output.finish(True)
-
+		except URLError:
+			self.output.write(u'网络连接错误。\n')
+			self.output.finish(False)
+		except:
+			import traceback
+			log = open('error.log', 'w')
+			traceback.print_exc(file=log)
+			log.close()
+			self.output.write(u'发生未知错误，请将error.log发送给作者。\n')
+			self.output.finish(False)
