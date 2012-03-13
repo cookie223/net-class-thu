@@ -67,7 +67,8 @@ By BlahGeek@gmail.com '''
 					thisitem.download_data(thispath, size_limit = option['size_limit'], \
 							type_only = option['type_only'], type_except = option['type_except'])
 				if itemtype == 'homework' or itemtype == 'notice':
-					thisitempath = os.path.join(thispath, '_'.join([j['name'].decode('UTF-8'), j['course_id'], j['id']])+'.txt')
+					thisitempath = os.path.join(thispath, '_'.join(\
+							[j['name'].decode('UTF-8').replace('\\', r'_').replace(r'/', r'_'), j['course_id'], j['id']])+'.txt')
 					if not os.path.exists(thisitempath):
 						unread_files += (thisitempath, )
 						fout = open(thisitempath, 'w')
