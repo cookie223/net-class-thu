@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-from items import *
+from lib.items import *
 import sys, os
+from lib.run_thread import mythread
 try:
 	from passwd import user, password
 except ImportError:
@@ -16,7 +17,30 @@ if hasattr(sys, 'setdefaultencoding'):
 option = {'path':'.', \
 					'size_limit':'0', \
 					'type_only':tuple(), \
-					'type_except':tuple(), }
+					'type_except':tuple(), 
+					'user':user, \
+					'password':password }
+
+class console_output:
+	def write(self, msg):
+		sys.stderr.write(msg)
+	def finish(self, statu):
+		if not statu:
+			sys.exit(statu)
+
+		unread_files = th.unread_files
+		os.system('clear')
+		if len(unread_files) == 0 :
+			sys.exit(0)
+		print u'\n\n\n下载完成，有', len(unread_files), u'个新公告/作业，是否阅读？ y/n'
+		choice = raw_input()
+		if choice.startswith('y') or choice.startswith('Y'):
+			for i in unread_files:
+				os.system('clear')
+				fin = open(i)
+				print fin.read()
+				fin.close()
+				raw_input()
 
 if __name__ == '__main__':
 	if '--help' in sys.argv :
@@ -47,43 +71,6 @@ By BlahGeek@gmail.com '''
 
 	option['size_limit'] = int(option['size_limit'])
 	option['path'] = os.path.normpath(option['path'].decode('UTF-8'))
-	unread_files = tuple()
 
-	try:
-		courses = login(user, password)
-	except:
-		print u'用户名密码错误或网络连接失败。'
-		sys.exit()
-	for i in courses:
-		print u'正在处理课程 ', i['name'].decode('UTF-8'), ' ...'
-		thiscourse = course(i)
-		for itemtype in item_name_dict:
-			for j in thiscourse.get_item_list(itemtype):
-				thisitem = item(j, itemtype)
-				thispath = os.path.join(option['path'], i['name'].decode('UTF-8'), item_name_dict[itemtype])
-				if not os.path.exists(thispath):
-					os.makedirs(thispath)
-				if itemtype == 'download' or itemtype == 'homework':
-					thisitem.download_data(thispath, size_limit = option['size_limit'], \
-							type_only = option['type_only'], type_except = option['type_except'])
-				if itemtype == 'homework' or itemtype == 'notice':
-					thisitempath = os.path.join(thispath, '_'.join(\
-							[j['name'].decode('UTF-8').replace('\\', r'_').replace(r'/', r'_'), j['course_id'], j['id']])+'.txt')
-					if not os.path.exists(thisitempath):
-						unread_files += (thisitempath, )
-						fout = open(thisitempath, 'w')
-						fout.write(thisitem.get_data())
-						fout.close()
-	
-	os.system('clear')
-	if len(unread_files) == 0 :
-		sys.exit(1)
-	print u'\n\n\n下载完成，有', len(unread_files), u'个新公告/作业，是否阅读？ y/n'
-	choice = raw_input()
-	if choice.startswith('y') or choice.startswith('Y'):
-		for i in unread_files:
-			os.system('clear')
-			fin = open(i)
-			print fin.read()
-			fin.close()
-			raw_input()
+	th = mythread(option, console_output(), if_format = True)
+	th.start()

@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-from main_window import *
+from ui.main_window import *
 from PyQt4 import QtGui, QtCore
 import sys
-from items import *
-from view_window import *
+from lib.items import *
+from ui.view_window import *
+from lib.run_thread import mythread
 
 __version__ = '0.2.1'
 if hasattr(sys, 'setdefaultencoding'):
@@ -37,51 +38,11 @@ class out_tunnel(QtCore.QObject):
 	def __init__(self):
 		super(out_tunnel, self).__init__()
 		self.connect(self, QtCore.SIGNAL('write(QString)'), main.write)
+		self.connect(self, QtCore.SIGNAL('finish(bool)'), main.finish)
 	def write(self, msg):
 		self.emit(QtCore.SIGNAL('write(QString)'), QtCore.QString(msg))
-
-class mythread(QtCore.QThread):
-	def __init__(self, option):
-		QtCore.QThread.__init__(self)
-		self.existing = False
-		self.option = option
-		self.output = out_tunnel()
-		self.connect(self, QtCore.SIGNAL('finish(bool)'), main.finish)
-	def run(self):
-		self.existing = False
-		self.unread_files = tuple()
-		try:
-			courses = login(self.option['user'], self.option['password'])
-		except:
-			self.output.write(u'\n\n用户名密码错误或网络连接失败。')
-			self.emit(QtCore.SIGNAL('finish(bool)'), False)
-			return
-		for i in courses:
-			self.output.write(u'正在处理课程 '+i['name'].decode('UTF-8')+' ...\n')
-			myapp.processEvents()
-			thiscourse = course(i)
-			for itemtype in item_name_dict:
-				for j in thiscourse.get_item_list(itemtype):
-					if self.existing:
-						self.output.write(u'\n\n\n\t\t下载取消，退出')
-						self.emit(QtCore.SIGNAL('finish(bool)'), False)
-						return
-					thisitem = item(j, itemtype)
-					thispath = os.path.join(self.option['path'], i['name'].decode('UTF-8'), item_name_dict[itemtype])
-					if not os.path.exists(thispath):
-						os.makedirs(thispath)
-					if itemtype == 'download' or itemtype == 'homework':
-						thisitem.download_data(thispath, size_limit = self.option['size_limit'], \
-								type_only = self.option['type_only'], type_except = self.option['type_except'], out = self.output)
-					if itemtype == 'homework' or itemtype == 'notice':
-						thisitempath = os.path.join(thispath, '_'.join([j['name'].decode('UTF-8'), j['course_id'], j['id']])+'.html')
-						if not os.path.exists(thisitempath):
-							self.unread_files += (thisitempath, )
-							fout = open(thisitempath, 'wb')
-							fout.write(thisitem.get_data(if_format = False, out = self.output))
-							fout.close()
-		self.output.write(u'\n\n\n下载完成！\n')
-		self.emit(QtCore.SIGNAL('finish(bool)'), True)
+	def finish(self, statu):
+		self.emit9QtCore.SIGNAL('finish(bool)'), statu)
 
 import pickle
 class main_window(QtGui.QMainWindow, Ui_main_window):
@@ -130,7 +91,7 @@ class main_window(QtGui.QMainWindow, Ui_main_window):
 		fout = open('data', 'w')
 		pickle.dump(self.option, fout)
 		fout.close()
-		self.th = mythread(self.option)
+		self.th = mythread(self.option, out_tunnel())
 		self.th.start()
 	def write(self, msg):
 		self.progress.appendPlainText(msg)
