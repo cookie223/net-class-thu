@@ -39,7 +39,7 @@ class course:
 		return itemlist_parser(f, itemtype).items
 
 import subprocess
-import os, sys
+import os, sys, tempfile
 html_dumper = ['w3m', '-T', 'text/html', '-dump']
 class item:
 	def __init__(self, item_dict, itemtype):
@@ -50,10 +50,10 @@ class item:
 		out.write(u'\t正在获取  '+item_name_dict[self.itemtype]+'   '+self.item_dict['name'].decode('UTF-8')+'...\n')
 		data = urllib2.urlopen(url).read()
 		if(if_format and (self.itemtype == 'notice' or self.itemtype == 'homework')):
-			fout = open('/tmp/notice_tmp', 'wb')
+			fout = tempfile.TemporaryFile()
 			fout.write(data)
-			fout.close()
-			data = subprocess.check_output(html_dumper, stdin=open('/tmp/notice_tmp'))
+			fout.seek(0)
+			data = subprocess.check_output(html_dumper, stdin=fout)
 		out.write(u'\t\t成功\n\n')
 		return data
 	def download_data(self, filepath, size_limit=0, type_except=tuple(), type_only=tuple(), out = sys.stdout):
