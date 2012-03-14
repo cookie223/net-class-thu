@@ -87,7 +87,7 @@ class item:
 		attach_url = urllib2.urlopen(url_dict[self.itemtype+'_url']+'?'+urllib.urlencode(self.item_dict)).read().partition('<a target="_top" href="')[2].partition('">')[0]
 		if attach_url == '':
 			out.write(u'\t正在处理  ' + item_name_dict[self.itemtype] +'   '+ self.item_dict['name'].decode('UTF-8') + '...\n')
-			out.write(u'\t\t无附件\n')
+			out.write(u'\t\t无附件\n\n')
 			return
 		attach_dict = urldecode(attach_url)
 		attach_dict['name'] = self.item_dict['name']

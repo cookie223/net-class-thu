@@ -73,4 +73,4 @@ By BlahGeek@gmail.com '''
 	option['path'] = os.path.normpath(option['path'].decode('UTF-8'))
 
 	th = mythread(option, console_output(), if_format = True)
-	th.start()
+	th.run()

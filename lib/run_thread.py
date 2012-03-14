@@ -50,6 +50,8 @@ class mythread(threading.Thread):
 								fout.close()
 			self.output.write(u'\n\n\n下载完成！\n')
 			self.output.finish(True)
+		except KeyboardInterrupt:
+			pass
 		except RuntimeError as error:
 			self.output.write(error.message)
 			self.output.finish(False)
