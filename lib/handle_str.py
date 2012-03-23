@@ -22,3 +22,8 @@ def filename_trans(data):
 	for i in ex_char:
 		data = data.replace(i, '_')
 	return data
+
+def is_datetime(data):
+	if len(data) == 10 and data[4] == '-' and data[7] == '-':
+		return True
+	return False

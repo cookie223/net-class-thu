@@ -42,7 +42,7 @@ class out_tunnel(QtCore.QObject):
 	def write(self, msg):
 		self.emit(QtCore.SIGNAL('write(QString)'), QtCore.QString(msg))
 	def finish(self, statu):
-		self.emit9QtCore.SIGNAL('finish(bool)'), statu)
+		self.emit(QtCore.SIGNAL('finish(bool)'), statu)
 
 import pickle
 class main_window(QtGui.QMainWindow, Ui_main_window):

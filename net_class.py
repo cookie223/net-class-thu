@@ -26,12 +26,12 @@ class console_output:
 		sys.stderr.write(msg)
 	def finish(self, statu):
 		if not statu:
-			sys.exit(statu)
+			return
 
 		unread_files = th.unread_files
-		os.system('clear')
 		if len(unread_files) == 0 :
-			sys.exit(0)
+			return
+		os.system('clear')
 		print u'\n\n\n下载完成，有', len(unread_files), u'个新公告/作业，是否阅读？ y/n'
 		choice = raw_input()
 		if choice.startswith('y') or choice.startswith('Y'):
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 例：net_class.py --path /tmp --size_limit 10000000 --type_only doc ppt
 
 By BlahGeek@gmail.com '''
-		exit()
+		sys.exit(0)
 	for i in sys.argv[1:]:
 		if i.startswith('--'):
 			thisoption = i[2:]

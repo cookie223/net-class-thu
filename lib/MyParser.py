@@ -23,6 +23,8 @@ class itemlist_parser(HTMLParser):
 					if 'href' in i:
 						href_str = i[1]
 				self.item_dict = urldecode(href_str)
+				if self.itemtype == 'homework':
+					self.item_dict['time'] = ''
 		except IndexError:
 			pass
 	def handle_data(self, data):
@@ -32,6 +34,14 @@ class itemlist_parser(HTMLParser):
 				return
 			self.is_item = False
 			self.items = self.items + (self.item_dict, )
+		if self.itemtype == 'homework':
+			if is_datetime(data):
+				self.items[-1]['time'] += data
+			if delete_space(data).decode('UTF-8') == u'已经提交':
+				self.items[-1]['is_submit'] = '1'
+			if delete_space(data).decode('UTF-8') == u'尚未提交':
+				self.items[-1]['is_submit'] = '0'
+
 	def check_is_item(self, tag, attrs):
 		if self.itemtype == 'notice' or self.itemtype == 'homework':
 			if tag == 'a' and attrs[0][0] == 'href':

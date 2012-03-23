@@ -44,13 +44,14 @@ class mythread(threading.Thread):
 						if itemtype == 'homework' or itemtype == 'notice':
 							thisitempath = os.path.join(thispath, '_'.join([filename_trans(j['name'].decode('UTF-8')), j['course_id'], j['id']])+self.fileroot)
 							if not os.path.exists(thisitempath):
-								self.unread_files += (thisitempath, )
 								fout = open(thisitempath, 'wb')
 								fout.write(thisitem.get_data(if_format = self.if_format, out = self.output))
 								fout.close()
+								if thisitem.itemtype != 'homework' or thisitem.item_dict['is_submit'] == '0':
+									self.unread_files += (thisitempath, )
 			self.output.write(u'\n\n\n下载完成！\n')
 			self.output.finish(True)
-		except KeyboardInterrupt:
+		except KeyboardInterrupt, SystemExit:
 			pass
 		except RuntimeError as error:
 			self.output.write(error.message)
