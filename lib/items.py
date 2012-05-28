@@ -67,7 +67,7 @@ class item:
 			return self.download_attachment(filepath, out = out)
 		url = url_dict[self.itemtype + '_url'] + '?' + urllib.urlencode(self.item_dict)
 		obj = urllib2.urlopen(url)
-		filename = os.path.join(filepath, obj.info().get('Content-Disposition').partition('filename="')[2][:-1].decode('gb2312'))
+		filename = os.path.join(filepath, obj.info().get('Content-Disposition').partition('filename="')[2][:-1].decode('gb18030'))
 		obj_type = filename.rpartition('.')[2]
 		out.write(u'\t正在处理  ' + item_name_dict[self.itemtype] +'   '+ self.item_dict['name'].decode('UTF-8') + '...\n' )
 		if os.path.exists(filename) and int(os.path.getsize(filename)) == int(obj.info().get('Content-Length')):
