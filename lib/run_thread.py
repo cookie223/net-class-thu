@@ -47,8 +47,8 @@ class mythread(threading.Thread):
 								fout = open(thisitempath, 'wb')
 								fout.write(thisitem.get_data(if_format = self.if_format, out = self.output))
 								fout.close()
-								if thisitem.itemtype != 'homework' or thisitem.item_dict['is_submit'] == '0':
-									self.unread_files += (thisitempath, )
+#								if thisitem.itemtype != 'homework' or thisitem.item_dict['is_submit'] == '0':
+								self.unread_files += (thisitempath, )
 			self.output.write(u'\n\n\n下载完成！\n')
 			self.output.finish(True)
 		except KeyboardInterrupt, SystemExit:
@@ -64,5 +64,5 @@ class mythread(threading.Thread):
 			log = open('error.log', 'w')
 			traceback.print_exc(file=log)
 			log.close()
-			self.output.write(u'发生未知错误，请将error.log发送给作者。\n')
+			self.output.write(u'发生未知错误，请重试。若问题依旧存在，请将error.log发送给作者，谢谢。\n')
 			self.output.finish(False)

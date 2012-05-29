@@ -20,7 +20,6 @@ item_name_dict = {'download':u'课程文件',
 import urllib
 import cookielib
 import urllib2
-from MyParser import *
 from MySoupParser import *
 
 def login(user, password):
@@ -44,6 +43,11 @@ class course:
 
 import subprocess
 import os, sys, tempfile
+try:
+	from BeautifulSoup import BeautifulSoup, NavigableString
+except ImportError:
+	from bs4 import BeautifulSoup, NavigableString
+
 html_dumper = ['w3m', '-T', 'text/html', '-dump']
 class item:
 	def __init__(self, item_dict, itemtype):
@@ -53,6 +57,12 @@ class item:
 		url = url_dict[self.itemtype + '_url'] + '?' + urlencode(self.item_dict)
 		out.write(u'\t正在获取  '+item_name_dict[self.itemtype]+'   '+self.item_dict['name']+'...\n')
 		data = urllib2.urlopen(url).read()
+
+		data_soup = BeautifulSoup(data)
+		if(self.itemtype == 'homework'):
+			insert_place = data_soup.find(name='td', attrs={'class':'title'})
+			insert_place.insert(0, NavigableString('[Deadline:' + self.item_dict['time'] + ',' + self.item_dict['is_submit'] + '] '))
+		data = data_soup.prettify()
 		if(if_format and (self.itemtype == 'notice' or self.itemtype == 'homework')):
 			fout = tempfile.TemporaryFile()
 			fout.write(data)

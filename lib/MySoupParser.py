@@ -8,7 +8,10 @@ if hasattr(sys, 'setdefaultencoding'):
 
 import re
 from handle_str import *
-from BeautifulSoup import BeautifulSoup
+try:
+	from BeautifulSoup import BeautifulSoup
+except ImportError:
+	from bs4 import BeautifulSoup
 class courselist_parser_soup(BeautifulSoup):
 	def __init__(self, feed_data):
 		BeautifulSoup.__init__(self, feed_data)
@@ -17,8 +20,8 @@ class courselist_parser_soup(BeautifulSoup):
 		for i in _courselist:
 			tmp = i.find(name='a')
 			course_dict = urldecode(tmp.get("href"))
-			course_dict['name'] = tmp.text.rpartition('(')[0].rpartition('(')[0]
-			course_dict['homework'] = i.find(name="span", attrs={"class":"red_text"}).text
+			course_dict['name'] = tmp.text.rpartition('(')[0].rpartition('(')[0].strip()
+			course_dict['homework'] = i.find(name="span", attrs={"class":"red_text"}).text.strip()
 			self.courses += (course_dict, )
 
 class itemlist_parser_soup(BeautifulSoup):
@@ -29,11 +32,8 @@ class itemlist_parser_soup(BeautifulSoup):
 		for i in _itemlist:
 			tmp = i.find("a")
 			item_dict = urldecode(tmp.get("href"))
-			item_dict['name'] = tmp.text
+			item_dict['name'] = tmp.text.strip()
 			if itemtype == 'homework':
-				if i.findAll(name="td")[3].text==u'已经提交':
-					item_dict['is_submit'] = '1'
-				else:
-					item_dict['is_submit'] = '0'
-				item_dict['time'] = i.findAll(name="td")[2].text
+				item_dict['is_submit'] = i.findAll(name="td")[3].text.strip()
+				item_dict['time'] = i.findAll(name="td")[2].text.strip()
 			self.items += (item_dict, )
