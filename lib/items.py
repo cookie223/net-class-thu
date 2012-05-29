@@ -33,12 +33,13 @@ def login(user, password, if_this_only = True):
 		para = urlencode({'userid':user, 'userpass':password})
 		urllib2.urlopen(loginurl, para)
 		first_html = urllib2.urlopen(courselist_url).read()
-		ret = courselist_parser_soup(first_html).courses
+		ret = tuple()
 		if not if_this_only:
 			terms = termlist_parser_soup(first_html).terms
 			for i in terms:
 				this_html = urllib2.urlopen(courselist_url.rpartition('/')[0] + '/' + i['url']).read()
 				ret += courselist_parser_soup(this_html).courses
+		ret += (courselist_parser_soup(first_html).courses, )
 		return ret
 	except urllib2.HTTPError:
 		raise RuntimeError(u'用户名密码错误\n')
@@ -69,7 +70,7 @@ class item:
 		if(self.itemtype == 'homework'):
 			insert_place = data_soup.find(name='td', attrs={'class':'title'})
 			insert_place.insert(0, NavigableString('[Deadline:' + self.item_dict['time'] + ',' + self.item_dict['is_submit'] + '] '))
-		data = data_soup.prettify()
+		data = unicode(data_soup).encode('UTF-8')
 		if(if_format and (self.itemtype == 'notice' or self.itemtype == 'homework')):
 			fout = tempfile.TemporaryFile()
 			fout.write(data)

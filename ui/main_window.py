@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue May 29 19:38:28 2012
+# Created: Tue May 29 19:50:47 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -115,13 +115,14 @@ class Ui_main_window(object):
         self.ok.setText(QtGui.QApplication.translate("main_window", "开始获取", None, QtGui.QApplication.UnicodeUTF8))
         self.path.setText(QtGui.QApplication.translate("main_window", "C:\\", None, QtGui.QApplication.UnicodeUTF8))
         self.select_path_button.setText(QtGui.QApplication.translate("main_window", "浏览", None, QtGui.QApplication.UnicodeUTF8))
-        self.progress.setPlainText(QtGui.QApplication.translate("main_window", "v 0.2 new:\n"
-"    1.修复了某些情况下保存路径乱码的问题。\n"
-"    2.修复了下载时关闭窗口下载无法停止的问题。\n"
-"    3.增加了停止下载的按钮。\n"
-"    4.增加了新版本检测功能。\n"
-"    5.改进了UI。\n"
-"    6.应该没了。\n"
+        self.progress.setPlainText(QtGui.QApplication.translate("main_window", "v 0.3 new:\n"
+"    1.支持处理之前学期的课程。\n"
+"    2.采用https。\n"
+"    3.增加显示课程作业截止时间与提交状况功能。\n"
+"    4.改进了许多异常情况下的处理。\n"
+"    5.改进了临时文件保存。\n"
+"    6.修复了公告或作业名中有斜杠时无法保存的bug。\n"
+"    7.代码更好看了... = =||\n"
 "\n"
 "对使用者人身经济安全造成的任何后果概不负责\n"
 "\n"

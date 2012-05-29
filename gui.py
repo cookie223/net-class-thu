@@ -7,7 +7,7 @@ from lib.items import *
 from ui.view_window import *
 from lib.run_thread import mythread
 
-__version__ = '0.2.1'
+__version__ = '0.3'
 if hasattr(sys, 'setdefaultencoding'):
 	sys.setdefaultencoding('UTF-8')
 
@@ -27,10 +27,7 @@ class read_window(QtGui.QMainWindow, Ui_read_window):
 		self.unread_files.remove(i)
 		fin = open(i)
 		tmp = fin.read()
-		if 'gb2312' in tmp:
-			tmp = tmp.decode('gb2312')
-		else:
-			tmp = tmp.decode('UTF-8')
+		tmp = tmp.decode('UTF-8')
 		self.text.setHtml(QtCore.QString(tmp))
 		fin.close()
 

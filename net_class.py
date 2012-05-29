@@ -39,7 +39,7 @@ class console_output:
 			for i in unread_files:
 				os.system('clear')
 				fin = open(i)
-				print fin.read()
+				print fin.read().decode('UTF-8')
 				fin.close()
 				raw_input()
 

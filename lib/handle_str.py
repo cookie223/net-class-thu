@@ -18,7 +18,7 @@ def delete_input(data):
 	return ans
 
 def filename_trans(data):
-	ex_char = ('\\', r'/', r'*', r'"', r'<', r'>', r'|')
+	ex_char = ('\\', r'/', r'*', r'"', r'<', r'>', r'|', r':', r'?')
 	for i in ex_char:
 		data = data.replace(i, '_')
 	return data
