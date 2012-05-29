@@ -39,7 +39,7 @@ def login(user, password, if_this_only = True):
 			for i in terms:
 				this_html = urllib2.urlopen(courselist_url.rpartition('/')[0] + '/' + i['url']).read()
 				ret += courselist_parser_soup(this_html).courses
-		ret += (courselist_parser_soup(first_html).courses, )
+		ret += courselist_parser_soup(first_html).courses
 		return ret
 	except urllib2.HTTPError:
 		raise RuntimeError(u'用户名密码错误\n')
