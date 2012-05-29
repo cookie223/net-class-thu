@@ -21,14 +21,15 @@ import urllib
 import cookielib
 import urllib2
 from MyParser import *
+from MySoupParser import *
 
 def login(user, password):
 	try:
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
 		urllib2.install_opener(opener)
-		para = urllib.urlencode({'userid':user, 'userpass':password})
+		para = urlencode({'userid':user, 'userpass':password})
 		urllib2.urlopen(loginurl, para)
-		return courselist_parser(urllib2.urlopen(courselist_url).read()).courses
+		return courselist_parser_soup(urllib2.urlopen(courselist_url).read()).courses
 	except urllib2.HTTPError:
 		raise RuntimeError(u'用户名密码错误\n')
 
@@ -36,10 +37,10 @@ class course:
 	def __init__(self, course_dict):
 		self.course_dict = course_dict
 	def get_item_list(self, itemtype):
-		url = url_dict[itemtype+'list_url'] + '?' + urllib.urlencode(self.course_dict)
+		url = url_dict[itemtype+'list_url'] + '?' + urlencode(self.course_dict)
 		f = urllib2.urlopen(url).read()
 		f = f.replace(r'&nbsp;', ' ')
-		return itemlist_parser(f, itemtype).items
+		return itemlist_parser_soup(f, itemtype).items
 
 import subprocess
 import os, sys, tempfile
@@ -49,8 +50,8 @@ class item:
 		self.item_dict = item_dict
 		self.itemtype = itemtype
 	def get_data(self, if_format = True, out = sys.stdout):
-		url = url_dict[self.itemtype + '_url'] + '?' + urllib.urlencode(self.item_dict)
-		out.write(u'\t正在获取  '+item_name_dict[self.itemtype]+'   '+self.item_dict['name'].decode('UTF-8')+'...\n')
+		url = url_dict[self.itemtype + '_url'] + '?' + urlencode(self.item_dict)
+		out.write(u'\t正在获取  '+item_name_dict[self.itemtype]+'   '+self.item_dict['name']+'...\n')
 		data = urllib2.urlopen(url).read()
 		if(if_format and (self.itemtype == 'notice' or self.itemtype == 'homework')):
 			fout = tempfile.TemporaryFile()
@@ -65,11 +66,11 @@ class item:
 	def download_data(self, filepath, size_limit=0, type_except=tuple(), type_only=tuple(), out = sys.stdout):
 		if self.itemtype == 'homework':
 			return self.download_attachment(filepath, out = out)
-		url = url_dict[self.itemtype + '_url'] + '?' + urllib.urlencode(self.item_dict)
+		url = url_dict[self.itemtype + '_url'] + '?' + urlencode(self.item_dict)
 		obj = urllib2.urlopen(url)
 		filename = os.path.join(filepath, obj.info().get('Content-Disposition').partition('filename="')[2][:-1].decode('gb18030'))
 		obj_type = filename.rpartition('.')[2]
-		out.write(u'\t正在处理  ' + item_name_dict[self.itemtype] +'   '+ self.item_dict['name'].decode('UTF-8') + '...\n' )
+		out.write(u'\t正在处理  ' + item_name_dict[self.itemtype] +'   '+ self.item_dict['name'] + '...\n' )
 		if os.path.exists(filename) and int(os.path.getsize(filename)) == int(obj.info().get('Content-Length')):
 			out.write(u'\t\t文件已存在，忽略 \n\n')
 			return 
@@ -84,9 +85,9 @@ class item:
 		fout.close()
 		out.write(u'\t\t下载成功。\n\n')
 	def download_attachment(self, filepath, out = sys.stdout):
-		attach_url = urllib2.urlopen(url_dict[self.itemtype+'_url']+'?'+urllib.urlencode(self.item_dict)).read().partition('<a target="_top" href="')[2].partition('">')[0]
+		attach_url = urllib2.urlopen(url_dict[self.itemtype+'_url']+'?'+urlencode(self.item_dict)).read().partition('<a target="_top" href="')[2].partition('">')[0]
 		if attach_url == '':
-			out.write(u'\t正在处理  ' + item_name_dict[self.itemtype] +'   '+ self.item_dict['name'].decode('UTF-8') + '...\n')
+			out.write(u'\t正在处理  ' + item_name_dict[self.itemtype] +'   '+ self.item_dict['name'] + '...\n')
 			out.write(u'\t\t无附件\n\n')
 			return
 		attach_dict = urldecode(attach_url)

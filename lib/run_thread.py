@@ -26,7 +26,7 @@ class mythread(threading.Thread):
 			self.unread_files = tuple()
 			courses = login(self.option['user'], self.option['password'])
 			for i in courses:
-				self.output.write(u'正在处理课程 '+i['name'].decode('UTF-8')+' ...\n')
+				self.output.write(u'正在处理课程 '+i['name']+' ...\n')
 				thiscourse = course(i)
 				for itemtype in item_name_dict:
 					for j in thiscourse.get_item_list(itemtype):
@@ -35,14 +35,14 @@ class mythread(threading.Thread):
 							self.output.finish(False)
 							return
 						thisitem = item(j, itemtype)
-						thispath = os.path.join(self.option['path'], i['name'].decode('UTF-8'), item_name_dict[itemtype])
+						thispath = os.path.join(self.option['path'], i['name'], item_name_dict[itemtype])
 						if not os.path.exists(thispath):
 							os.makedirs(thispath)
 						if itemtype == 'download' or itemtype == 'homework':
 							thisitem.download_data(thispath, size_limit = self.option['size_limit'], \
 									type_only = self.option['type_only'], type_except = self.option['type_except'], out = self.output)
 						if itemtype == 'homework' or itemtype == 'notice':
-							thisitempath = os.path.join(thispath, '_'.join([filename_trans(j['name'].decode('UTF-8')), j['course_id'], j['id']])+self.fileroot)
+							thisitempath = os.path.join(thispath, '_'.join([filename_trans(j['name']), j['course_id'], j['id']])+self.fileroot)
 							if not os.path.exists(thisitempath):
 								fout = open(thisitempath, 'wb')
 								fout.write(thisitem.get_data(if_format = self.if_format, out = self.output))

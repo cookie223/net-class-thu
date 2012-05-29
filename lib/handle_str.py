@@ -27,3 +27,9 @@ def is_datetime(data):
 	if len(data) == 10 and data[4] == '-' and data[7] == '-':
 		return True
 	return False
+
+def urlencode(_dic):
+	dic = dict(_dic)
+	for i in dic:
+		dic[i] = dic[i].encode('UTF-8')
+	return urllib.urlencode(dic)
