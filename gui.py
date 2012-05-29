@@ -86,6 +86,7 @@ class main_window(QtGui.QMainWindow, Ui_main_window):
 		self.option['type_only'] = tuple(str(self.type_only_input.text().toUtf8()).decode('UTF-8').split(' '))
 		self.option['type_except'] = tuple(str(self.type_except_input.text().toUtf8()).decode('UTF-8').split(' '))
 		self.option['path'] = str(self.path.text().toUtf8()).decode('UTF-8')
+		self.option['if_this_only'] = self.checkBox.isChecked()
 		if self.option['type_only'] == (u'', ):
 			self.option['type_only'] = tuple()
 		fout = open('data', 'w')

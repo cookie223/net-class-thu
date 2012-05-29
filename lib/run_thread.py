@@ -24,7 +24,7 @@ class mythread(threading.Thread):
 		try:
 			self.existing = False
 			self.unread_files = tuple()
-			courses = login(self.option['user'], self.option['password'])
+			courses = login(self.option['user'], self.option['password'], self.option['if_this_only'])
 			for i in courses:
 				self.output.write(u'正在处理课程 '+i['name']+' ...\n')
 				thiscourse = course(i)

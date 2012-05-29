@@ -21,14 +21,25 @@ import urllib
 import cookielib
 import urllib2
 from MySoupParser import *
+try:
+	from BeautifulSoup import BeautifulSoup, NavigableString
+except ImportError:
+	from bs4 import BeautifulSoup, NavigableString
 
-def login(user, password):
+def login(user, password, if_this_only = True):
 	try:
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
 		urllib2.install_opener(opener)
 		para = urlencode({'userid':user, 'userpass':password})
 		urllib2.urlopen(loginurl, para)
-		return courselist_parser_soup(urllib2.urlopen(courselist_url).read()).courses
+		first_html = urllib2.urlopen(courselist_url).read()
+		ret = courselist_parser_soup(first_html).courses
+		if not if_this_only:
+			terms = termlist_parser_soup(first_html).terms
+			for i in terms:
+				this_html = urllib2.urlopen(courselist_url.rpartition('/')[0] + '/' + i['url']).read()
+				ret += courselist_parser_soup(this_html).courses
+		return ret
 	except urllib2.HTTPError:
 		raise RuntimeError(u'用户名密码错误\n')
 
@@ -43,10 +54,6 @@ class course:
 
 import subprocess
 import os, sys, tempfile
-try:
-	from BeautifulSoup import BeautifulSoup, NavigableString
-except ImportError:
-	from bs4 import BeautifulSoup, NavigableString
 
 html_dumper = ['w3m', '-T', 'text/html', '-dump']
 class item:

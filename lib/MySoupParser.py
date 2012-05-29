@@ -24,6 +24,20 @@ class courselist_parser_soup(BeautifulSoup):
 			course_dict['homework'] = i.find(name="span", attrs={"class":"red_text"}).text.strip()
 			self.courses += (course_dict, )
 
+class termlist_parser_soup(BeautifulSoup):
+	def __init__(self, feed_data):
+		BeautifulSoup.__init__(self, feed_data)
+		self.terms = tuple()
+		_termlist = self.findAll(name='td', attrs={'class':'common_c2'})
+		for i in _termlist:
+			tmp = i.find(name='a', attrs={'href':re.compile('^MyCourse.jsp.*')})
+			if tmp == None:
+				continue
+			term_dict = dict()
+			term_dict['name'] = tmp.text.strip()
+			term_dict['url'] = tmp.get('href')
+			self.terms += (term_dict, )
+
 class itemlist_parser_soup(BeautifulSoup):
 	def __init__(self, feed_data, itemtype):
 		BeautifulSoup.__init__(self, feed_data)
