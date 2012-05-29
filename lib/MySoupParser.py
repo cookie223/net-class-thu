@@ -8,10 +8,7 @@ if hasattr(sys, 'setdefaultencoding'):
 
 import re
 from handle_str import *
-try:
-	from BeautifulSoup import BeautifulSoup
-except ImportError:
-	from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 class courselist_parser_soup(BeautifulSoup):
 	def __init__(self, feed_data):
 		BeautifulSoup.__init__(self, feed_data)

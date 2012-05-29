@@ -21,10 +21,7 @@ import urllib
 import cookielib
 import urllib2
 from MySoupParser import *
-try:
-	from BeautifulSoup import BeautifulSoup, NavigableString
-except ImportError:
-	from bs4 import BeautifulSoup, NavigableString
+from BeautifulSoup import BeautifulSoup, NavigableString
 
 def login(user, password, if_this_only = True):
 	try:
