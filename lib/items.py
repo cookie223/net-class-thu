@@ -100,7 +100,11 @@ class item:
 			out.write(u'\t\t文件类型不匹配，忽略 \n\n')
 			return 
 		fout = open(filename, 'wb')
-		fout.write(obj.read())
+		while True:
+			_little_data = obj.read(1024)
+			if len(_little_data) == 0:
+				break
+			fout.write(_little_data)
 		fout.close()
 		out.write(u'\t\t下载成功。\n\n')
 	def download_attachment(self, filepath, out = sys.stdout):
