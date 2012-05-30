@@ -39,8 +39,11 @@ class mythread(threading.Thread):
 						if not os.path.exists(thispath):
 							os.makedirs(thispath)
 						if itemtype == 'download' or itemtype == 'homework':
-							thisitem.download_data(thispath, size_limit = self.option['size_limit'], \
-									type_only = self.option['type_only'], type_except = self.option['type_except'], out = self.output)
+							try:
+								thisitem.download_data(thispath, size_limit = self.option['size_limit'], \
+										type_only = self.option['type_only'], type_except = self.option['type_except'], out = self.output)
+							except:
+								self.output.write(u'\t\t发生未知错误，忽略此文件。')
 						if itemtype == 'homework' or itemtype == 'notice':
 							thisitempath = os.path.join(thispath, '_'.join([filename_trans(j['name']), j['course_id'], j['id']])+self.fileroot)
 							if not os.path.exists(thisitempath):
