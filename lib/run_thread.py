@@ -35,7 +35,7 @@ class mythread(threading.Thread):
 							self.output.finish(False)
 							return
 						thisitem = item(j, itemtype)
-						thispath = os.path.join(self.option['path'], i['name'], item_name_dict[itemtype])
+						thispath = os.path.join(self.option['path'], filename_trans(i['name']), item_name_dict[itemtype])
 						if not os.path.exists(thispath):
 							os.makedirs(thispath)
 						if itemtype == 'download' or itemtype == 'homework':
