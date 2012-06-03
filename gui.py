@@ -7,7 +7,7 @@ from lib.items import *
 from ui.view_window import *
 from lib.run_thread import mythread
 
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 if hasattr(sys, 'setdefaultencoding'):
 	sys.setdefaultencoding('UTF-8')
 
