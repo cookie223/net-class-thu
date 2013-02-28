@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding=UTF-8 -*-
 
-baseurl = 'https://learn.tsinghua.edu.cn/MultiLanguage'
+baseurl = 'http://learn.tsinghua.edu.cn/MultiLanguage'
 loginurl = baseurl + '/lesson/teacher/loginteacher.jsp'
 courselist_url = baseurl + '/lesson/student/MyCourse.jsp?language=cn'
 noticelist_url = baseurl + '/public/bbs/getnoteid_student.jsp'
